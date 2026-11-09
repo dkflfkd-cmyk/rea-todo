@@ -1,0 +1,195 @@
+import { useEffect, useRef, useState } from 'react';
+import type { ViewId } from './types';
+import { StoreProvider, useStore } from './store';
+import { Sidebar } from './components/Sidebar';
+import { TaskList } from './components/TaskList';
+import { DetailPanel } from './components/DetailPanel';
+import { SettingsView } from './components/SettingsView';
+import { reminderLabel, todayStr } from './date';
+import './App.css';
+
+type Confirm = { title: string; body: string; action: () => void };
+
+function Shell() {
+  const { state, dispatch } = useStore();
+  const [view, setView] = useState<ViewId>('myday');
+  const [query, setQuery] = useState('');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState(window.innerWidth < 720);
+  const [confirm, setConfirm] = useState<Confirm | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const addRef = useRef<HTMLInputElement>(null);
+  const newListRef = useRef<HTMLInputElement>(null);
+
+  const selected = state.tasks.find((t) => t.id === selectedId) ?? null;
+
+  useEffect(() => {
+    const dark =
+      state.settings.theme === 'dark' ||
+      (state.settings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  }, [state.settings.theme]);
+
+  // reminders are checked every 15 seconds while the app is open
+  useEffect(() => {
+    const tick = () => {
+      const now = Date.now();
+      for (const t of state.tasks) {
+        if (t.reminder && !t.reminderFired && !t.done && new Date(t.reminder).getTime() <= now) {
+          dispatch({ type: 'updateTask', id: t.id, patch: { reminderFired: true } });
+          setToast(`미리 알림: ${t.title}`);
+          try {
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('REA To Do 미리 알림', { body: `${t.title}\n${reminderLabel(t.reminder)}` });
+            }
+          } catch {
+            // notifications unavailable
+          }
+        }
+      }
+    };
+    tick();
+    const id = setInterval(tick, 15000);
+    return () => clearInterval(id);
+  }, [state.tasks, dispatch]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(null), 6000);
+    return () => clearTimeout(id);
+  }, [toast]);
+
+  function deleteTask(id: string) {
+    const t = state.tasks.find((x) => x.id === id);
+    if (!t) return;
+    const run = () => {
+      dispatch({ type: 'deleteTask', id });
+      if (selectedId === id) setSelectedId(null);
+    };
+    if (state.settings.confirmDelete) setConfirm({ title: `"${t.title}"이(가) 영구적으로 삭제됩니다.`, body: '이 작업은 취소할 수 없습니다.', action: run });
+    else run();
+  }
+
+  function deleteList(id: string) {
+    const l = state.lists.find((x) => x.id === id);
+    if (!l) return;
+    setConfirm({
+      title: `"${l.name}"이(가) 영구적으로 삭제됩니다.`,
+      body: '이 목록과 목록의 모든 작업을 되돌릴 수 없습니다.',
+      action: () => {
+        dispatch({ type: 'deleteList', id });
+        setView('tasks');
+      },
+    });
+  }
+
+  // keyboard shortcuts modelled on the Windows app
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const typing = (e.target as HTMLElement).closest('input, textarea');
+      const k = e.key.toLowerCase();
+      if (e.ctrlKey && k === 'n') {
+        e.preventDefault();
+        addRef.current?.focus();
+      } else if (e.ctrlKey && k === 'l') {
+        e.preventDefault();
+        setCollapsed(false);
+        setTimeout(() => newListRef.current?.focus(), 0);
+      } else if (e.ctrlKey && k === 'f') {
+        e.preventDefault();
+        setCollapsed(false);
+        setTimeout(() => searchRef.current?.focus(), 0);
+      } else if (e.ctrlKey && k === 'd' && selectedId) {
+        e.preventDefault();
+        dispatch({ type: 'toggleDone', id: selectedId });
+      } else if (e.ctrlKey && k === 't' && selected) {
+        e.preventDefault();
+        dispatch({ type: 'updateTask', id: selected.id, patch: { myDay: selected.myDay === todayStr() ? null : todayStr() } });
+      } else if (e.key === 'Delete' && selectedId && !typing) {
+        deleteTask(selectedId);
+      } else if (e.key === 'Escape' && !typing) {
+        setSelectedId(null);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
+
+  function selectView(v: ViewId) {
+    setView(v);
+    setSelectedId(null);
+    if (v !== 'search') setQuery('');
+    if (window.innerWidth < 720) setCollapsed(true);
+  }
+
+  return (
+    <div className="app">
+      <Sidebar
+        view={view}
+        onSelect={selectView}
+        query={query}
+        onQuery={(q) => {
+          setQuery(q);
+          if (!q && view === 'search') setView('myday');
+        }}
+        searchRef={searchRef}
+        newListRef={newListRef}
+        collapsed={collapsed}
+        onToggle={() => setCollapsed(!collapsed)}
+      />
+      {view === 'settings' ? (
+        <SettingsView />
+      ) : (
+        <TaskList
+          view={view}
+          query={query}
+          selectedId={selectedId}
+          onSelectTask={(id) => setSelectedId(id === selectedId ? null : id)}
+          onDeleteTask={deleteTask}
+          onDeleteList={deleteList}
+          addRef={addRef}
+        />
+      )}
+      {selected && view !== 'settings' && (
+        <DetailPanel key={selected.id} task={selected} onClose={() => setSelectedId(null)} onDelete={() => deleteTask(selected.id)} />
+      )}
+
+      {confirm && (
+        <div className="overlay" onMouseDown={() => setConfirm(null)}>
+          <div className="dialog" role="dialog" aria-modal="true" onMouseDown={(e) => e.stopPropagation()}>
+            <strong>{confirm.title}</strong>
+            <p>{confirm.body}</p>
+            <div className="dialog-actions">
+              <button className="text-btn outline" onClick={() => setConfirm(null)} autoFocus>
+                취소
+              </button>
+              <button
+                className="danger-btn"
+                onClick={() => {
+                  confirm.action();
+                  setConfirm(null);
+                }}
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {toast && (
+        <div className="toast" role="status">
+          {toast}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <StoreProvider>
+      <Shell />
+    </StoreProvider>
+  );
+}
