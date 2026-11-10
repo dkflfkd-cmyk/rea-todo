@@ -1,5 +1,6 @@
 import type { Settings, SmartListKey } from '../types';
 import { useStore } from '../store';
+import { sampleData } from '../sample';
 
 const SMART_LABEL: Record<SmartListKey, string> = { important: '중요', planned: '계획된 일정', all: '모두', completed: '완료됨' };
 
@@ -51,6 +52,14 @@ export function SettingsView() {
           REA To Do 1.0.0 · Microsoft To Do(Windows)의 화면과 동작을 AI 에이전트(Claude Code)로 역분석하여 다시 만든 학습용 웹앱입니다.
           데이터는 이 브라우저(localStorage)에만 저장됩니다.
         </p>
+        <button
+          className="text-btn outline"
+          onClick={() => {
+            if (confirm('지금 있는 작업과 목록을 지우고 예시 데이터를 넣을까요?')) dispatch({ type: 'replaceData', ...sampleData() });
+          }}
+        >
+          예시 데이터 넣기
+        </button>{' '}
         <button
           className="text-btn outline danger"
           onClick={() => {

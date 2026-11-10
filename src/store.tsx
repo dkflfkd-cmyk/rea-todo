@@ -51,7 +51,8 @@ export type Action =
   | { type: 'updateList'; id: string; patch: Partial<TodoList> }
   | { type: 'deleteList'; id: string }
   | { type: 'setViewPref'; view: string; patch: Partial<ViewPref> }
-  | { type: 'setSettings'; patch: Partial<Settings> };
+  | { type: 'setSettings'; patch: Partial<Settings> }
+  | { type: 'replaceData'; tasks: Task[]; lists: TodoList[] };
 
 function newTask(state: State, id: string, title: string, view: ViewId): Task {
   const orders = state.tasks.map((t) => t.order);
@@ -157,6 +158,8 @@ function reducer(state: State, a: Action): State {
     }
     case 'setSettings':
       return { ...state, settings: { ...state.settings, ...a.patch } };
+    case 'replaceData':
+      return { ...state, tasks: a.tasks, lists: a.lists, viewPrefs: {} };
   }
 }
 
