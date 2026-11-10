@@ -1,9 +1,9 @@
 # REA To Do
 
-Microsoft To Do(Windows 앱)의 화면과 동작을 **REA(Reverse Engineering Agent)** 방식으로 역분석해 다시 만든 학습용 웹앱입니다.
+Microsoft To Do 웹(to-do.live.com)의 화면과 동작을 **REA(Reverse Engineering Agent)** 방식으로 역분석해 다시 만든 학습용 웹앱입니다.
 원본 소스 코드는 보지 않았고, 원본 앱을 직접 사용하며 관찰한 화면·동작을 AI 에이전트(Claude Code)에게 설명해 같은 기능을 구현했습니다.
 
-- 원본: Microsoft To Do (Windows, Microsoft Store 배포, 소스 비공개)
+- 원본: Microsoft To Do 웹 서비스 (to-do.live.com, Microsoft 365, 소스 비공개)
 - 개발: React 19 + TypeScript + Vite 6, 데이터는 브라우저 localStorage에 저장
 - AI: Claude Code (Claude Opus 5.5)
 
@@ -41,7 +41,9 @@ npm run dev
 | 단계 추가·완료·삭제, 작업으로 승격 | O | O |
 | 오늘 할 일 + 추천 | O | O |
 | 기한(오늘/내일/다음 주/날짜 선택) | O | O |
-| 미리 알림(날짜·시간) | O (OS 알림) | O (앱이 열려 있을 때 브라우저 알림) |
+| 미리 알림(날짜·시간) | O | 부분 (탭이 열려 있을 때 브라우저 알림) |
+| 나에게 할당됨 화면 | O | 부분 (화면만, 공유 서버가 없어 항상 비어 있음) |
+| 앱 전환 바(메일·일정·사람·파일) | O | 부분 (모양만, 다른 Microsoft 서비스로 이동 불가) |
 | 반복(매일/평일/매주/매월/매년), 완료 시 다음 작업 생성 | O | O |
 | 메모 | O (서식 지원) | 부분 (일반 텍스트) |
 | 목록 만들기·이름 바꾸기·삭제·테마 색 | O | O (배경 사진 테마 제외) |
@@ -56,5 +58,5 @@ npm run dev
 | 파일 첨부 | O (OneDrive) | X |
 | 플래그 지정 메일 | O (Outlook 연동) | X |
 | 목록 그룹(만들기·이름 바꾸기·해제, 목록 끌어 넣기) | O | O |
-| 목록 공유, 나에게 할당됨 | O | X (서버 필요) |
+| 목록 공유 | O | X (서버 필요) |
 | 기기 간 동기화 | O | X (로그인 제외 범위) |
