@@ -171,7 +171,7 @@ function Shell() {
         </span>
       </header>
       <div className="app-body">
-      <Sidebar view={view} onSelect={selectView} newListRef={newListRef} collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
+      <Sidebar view={view} onSelect={selectView} newListRef={newListRef} collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} onUnsupported={setToast} />
       {view === 'settings' ? (
         <SettingsView />
       ) : (

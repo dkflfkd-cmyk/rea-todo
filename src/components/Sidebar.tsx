@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { TodoList, ViewId } from '../types';
+import type { SmartListKey, TodoList, ViewId } from '../types';
 import { THEMES, uid, useStore } from '../store';
 import { SMART, inView } from '../views';
 import { Icon } from '../icons';
@@ -13,9 +13,10 @@ type Props = {
   newListRef: React.RefObject<HTMLInputElement | null>;
   collapsed: boolean;
   onToggle: () => void;
+  onUnsupported: (message: string) => void;
 };
 
-export function Sidebar({ view, onSelect, newListRef, collapsed, onToggle }: Props) {
+export function Sidebar({ view, onSelect, newListRef, collapsed, onToggle, onUnsupported }: Props) {
   const { state, dispatch } = useStore();
   const [newName, setNewName] = useState('');
   const [dragOver, setDragOver] = useState<string | null>(null);
@@ -25,7 +26,7 @@ export function Sidebar({ view, onSelect, newListRef, collapsed, onToggle }: Pro
   const count = (v: ViewId) => state.tasks.filter((t) => !t.done && inView(t, v)).length;
   const visible = SMART.filter((s) => {
     if (s.id === 'myday' || s.id === 'tasks') return true;
-    return state.settings.smartLists[s.id as 'important' | 'planned' | 'all' | 'completed'];
+    return state.settings.smartLists[s.id as SmartListKey];
   });
 
   function createList() {
@@ -199,6 +200,23 @@ export function Sidebar({ view, onSelect, newListRef, collapsed, onToggle }: Pro
               <Icon name="groupAdd" />
             </button>
           </div>
+        )}
+        {!collapsed && (
+          <nav className="app-switcher" aria-label="앱 전환">
+            {[
+              ['mail', '메일'],
+              ['calendar', '일정'],
+              ['people', '사람'],
+              ['clip', '파일'],
+            ].map(([icon, label]) => (
+              <button key={icon} title={label} aria-label={label} onClick={() => onUnsupported(`${label}은(는) 다른 Microsoft 서비스로 이동하는 기능이라 지원하지 않습니다.`)}>
+                <Icon name={icon} />
+              </button>
+            ))}
+            <button className="on" title="To Do" aria-label="To Do" aria-current="page">
+              <Icon name="check" />
+            </button>
+          </nav>
         )}
       </div>
       {menu && <Menu x={menu.x} y={menu.y} items={menu.items} onClose={() => setMenu(null)} />}

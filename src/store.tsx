@@ -15,7 +15,7 @@ const defaultSettings: Settings = {
   addToTop: true,
   confirmDelete: true,
   playSound: true,
-  smartLists: { important: true, planned: true, all: false, completed: false },
+  smartLists: { important: true, planned: true, assigned: true, all: false, completed: false },
 };
 
 export const defaultPref = (view: string): ViewPref => ({
@@ -31,7 +31,9 @@ function initialState(): State {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const s = JSON.parse(raw) as State;
-      return { ...s, groups: s.groups ?? [], settings: { ...defaultSettings, ...s.settings } };
+      const settings = { ...defaultSettings, ...s.settings };
+      settings.smartLists = { ...defaultSettings.smartLists, ...settings.smartLists };
+      return { ...s, groups: s.groups ?? [], settings };
     }
   } catch {
     // storage blocked or corrupted: start fresh

@@ -31,7 +31,7 @@ export type GroupBy = 'none' | 'due' | 'importance' | 'list';
 
 export type ViewPref = { sort: SortKey; asc: boolean; showCompleted: boolean; layout: 'list' | 'grid'; groupBy: GroupBy };
 
-export type SmartListKey = 'important' | 'planned' | 'all' | 'completed';
+export type SmartListKey = 'important' | 'planned' | 'assigned' | 'all' | 'completed';
 
 export type Settings = {
   theme: 'light' | 'dark' | 'system';
@@ -50,4 +50,4 @@ export type State = {
 };
 
 // smart views plus `list:<id>` for user lists
-export type ViewId = 'myday' | 'important' | 'planned' | 'all' | 'completed' | 'tasks' | 'search' | 'settings' | `list:${string}`;
+export type ViewId = 'myday' | 'important' | 'planned' | 'assigned' | 'all' | 'completed' | 'tasks' | 'search' | 'settings' | `list:${string}`;

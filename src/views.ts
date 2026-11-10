@@ -5,6 +5,7 @@ export const SMART: { id: ViewId; name: string; icon: string; color: string }[] 
   { id: 'myday', name: '오늘 할 일', icon: 'sun', color: '#2564cf' },
   { id: 'important', name: '중요', icon: 'star', color: '#c239b3' },
   { id: 'planned', name: '계획된 일정', icon: 'calendar', color: '#107c41' },
+  { id: 'assigned', name: '나에게 할당됨', icon: 'person', color: '#107c41' },
   { id: 'all', name: '모두', icon: 'infinity', color: '#c50f1f' },
   { id: 'completed', name: '완료됨', icon: 'checkCircle', color: '#c50f1f' },
   { id: 'tasks', name: '작업', icon: 'home', color: '#2564cf' },
@@ -26,6 +27,9 @@ export function inView(t: Task, view: ViewId, query = ''): boolean {
       return t.important;
     case 'planned':
       return t.due !== null;
+    case 'assigned':
+      // assignment needs shared lists on Microsoft's servers, so nothing is ever assigned here
+      return false;
     case 'all':
       return true;
     case 'completed':

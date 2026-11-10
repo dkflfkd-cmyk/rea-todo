@@ -16,7 +16,15 @@
 .layout-tabs button { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 13px; border-bottom: 2px solid transparent; }
 .layout-tabs button:hover { background: rgba(0, 0, 0, .04); }
 .layout-tabs button.on { border-bottom-color: var(--accent, var(--blue)); color: var(--accent, var(--blue)); font-weight: 600; }
-.chip-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.chip-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: flex-end; }
+.chip-row .sort-chip { margin-left: 0; font-weight: 600; color: var(--text); }
+.add-tools .text-btn.add-btn:disabled { color: var(--text-3); cursor: default; }
+
+/* Microsoft 365 app switcher at the bottom of the sidebar */
+.app-switcher { display: flex; justify-content: space-around; border-top: 1px solid var(--line); padding: 4px 0; }
+.app-switcher button { display: flex; align-items: center; justify-content: center; width: 44px; height: 36px; color: var(--text-2); border-radius: 4px; }
+.app-switcher button:hover { background: var(--hover); }
+.app-switcher button.on { color: var(--blue); background: var(--active); }
 .main { container-type: inline-size; }
 .title-row .text-btn, .layout-tabs button { white-space: nowrap; flex-shrink: 0; }
 /* like the original, header buttons drop their labels when the list area gets narrow */

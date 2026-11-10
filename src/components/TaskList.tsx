@@ -40,7 +40,7 @@ export function TaskList({ view, query, selectedId, onSelectTask, onDeleteTask, 
   const all = state.tasks.filter((t) => inView(t, view, query));
   const open = sortTasks(all.filter((t) => !t.done), pref.sort, pref.asc);
   const done = sortTasks(all.filter((t) => t.done), pref.sort === 'manual' ? 'created' : pref.sort, pref.asc);
-  const canAdd = view !== 'search' && view !== 'completed';
+  const canAdd = view !== 'search' && view !== 'completed' && view !== 'assigned';
   const canDrag = pref.sort === 'manual' && pref.groupBy === 'none' && view !== 'search';
   const grid = pref.layout === 'grid';
   const today = todayStr();
@@ -239,9 +239,9 @@ export function TaskList({ view, query, selectedId, onSelectTask, onDeleteTask, 
             {pref.sort !== 'manual' && (
               <div className="sort-chip">
                 <button onClick={() => setPref({ asc: !pref.asc })} aria-label="정렬 순서 바꾸기">
-                  <Icon name={pref.asc ? 'arrowUp' : 'arrowDown'} size={14} />
+                  <Icon name={pref.asc ? 'chevronDown' : 'arrowUp'} size={14} />
                 </button>
-                {SORT_LABEL[pref.sort]} 순으로 정렬됨
+                {SORT_LABEL[pref.sort]}순으로 정렬
                 <button onClick={() => setSort('manual')} aria-label="정렬 제거">
                   <Icon name="x" size={14} />
                 </button>
@@ -286,11 +286,9 @@ export function TaskList({ view, query, selectedId, onSelectTask, onDeleteTask, 
               </button>
               {chips.length > 0 && <span className="add-chips">{chips.join(' · ')}</span>}
               <div className="spacer" />
-              {title.trim() && (
-                <button className="text-btn outline" onMouseDown={(e) => e.preventDefault()} onClick={add}>
-                  추가
-                </button>
-              )}
+              <button className="text-btn outline add-btn" disabled={!title.trim()} onMouseDown={(e) => e.preventDefault()} onClick={add}>
+                추가
+              </button>
             </div>
           </div>
         )}
@@ -333,6 +331,7 @@ function EmptyState({ view, query }: { view: ViewId; query: string }) {
     important: ['중요한 작업에 별표를 표시하세요', '별표 표시한 작업이 여기에 모입니다.'],
     planned: ['기한이 있는 작업이 여기에 표시됩니다', '작업에 기한을 추가해 보세요.'],
     completed: ['아직 완료된 작업이 없습니다', '작업을 완료하면 여기에 표시됩니다.'],
+    assigned: ['나에게 할당된 작업이 없습니다', '공유 목록에서 다른 사람이 할당한 작업이 표시되는 곳입니다. (공유 기능은 서버가 필요해 지원하지 않습니다)'],
   };
   if (view === 'search') {
     return <div className="empty">{query.trim() ? `"${query}"에 대한 결과가 없습니다.` : '검색할 내용을 입력하세요.'}</div>;

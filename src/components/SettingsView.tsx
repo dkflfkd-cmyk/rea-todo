@@ -2,7 +2,7 @@ import type { Settings, SmartListKey } from '../types';
 import { useStore } from '../store';
 import { sampleData } from '../sample';
 
-const SMART_LABEL: Record<SmartListKey, string> = { important: '중요', planned: '계획된 일정', all: '모두', completed: '완료됨' };
+const SMART_LABEL: Record<SmartListKey, string> = { important: '중요', planned: '계획된 일정', assigned: '나에게 할당됨', all: '모두', completed: '완료됨' };
 
 export function SettingsView() {
   const { state, dispatch } = useStore();
