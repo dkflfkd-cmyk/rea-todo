@@ -208,10 +208,10 @@ export function TaskList({ view, query, selectedId, onSelectTask, onDeleteTask, 
               </button>
               <div className="layout-tabs" role="tablist">
                 <button role="tab" aria-selected={grid} className={grid ? 'on' : ''} onClick={() => setPref({ layout: 'grid' })}>
-                  <Icon name="grid" size={16} /> 그리드
+                  <Icon name="grid" size={16} /> <span className="btn-label">그리드</span>
                 </button>
                 <button role="tab" aria-selected={!grid} className={!grid ? 'on' : ''} onClick={() => setPref({ layout: 'list' })}>
-                  <Icon name="rows" size={16} /> 목록
+                  <Icon name="rows" size={16} /> <span className="btn-label">목록</span>
                 </button>
               </div>
             </>
@@ -219,17 +219,17 @@ export function TaskList({ view, query, selectedId, onSelectTask, onDeleteTask, 
           <div className="spacer" />
           {view !== 'search' && view !== 'planned' && (
             <button className="text-btn" onClick={openMenu('sort')}>
-              <Icon name="sort" size={16} /> 정렬
+              <Icon name="sort" size={16} /> <span className="btn-label">정렬</span>
             </button>
           )}
           {view !== 'search' && view !== 'planned' && view !== 'completed' && (
             <button className="text-btn" onClick={openMenu('group')}>
-              <Icon name="folder" size={16} /> 그룹
+              <Icon name="folder" size={16} /> <span className="btn-label">그룹</span>
             </button>
           )}
           {view === 'myday' && (
             <button className={`text-btn${showSuggest ? ' pressed' : ''}`} onClick={() => setShowSuggest(!showSuggest)}>
-              <Icon name="bulb" size={16} /> 일정 계획
+              <Icon name="bulb" size={16} /> <span className="btn-label">일정 계획</span>
             </button>
           )}
         </div>

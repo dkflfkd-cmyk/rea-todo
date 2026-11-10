@@ -3,7 +3,7 @@ import { listName, useStore } from '../store';
 import { dueLabel, todayStr } from '../date';
 import { Icon } from '../icons';
 
-// "추천" pane of My Day: overdue / due-today tasks, and tasks left over from an earlier My Day
+// "일정 계획" pane of My Day: overdue / due-today tasks, and tasks left over from an earlier My Day
 export function Suggestions({ onClose }: { onClose: () => void }) {
   const { state, dispatch } = useStore();
   const today = todayStr();
@@ -18,12 +18,12 @@ export function Suggestions({ onClose }: { onClose: () => void }) {
   return (
     <aside className="suggest">
       <div className="suggest-head">
-        <strong>추천</strong>
-        <button className="icon-btn" onClick={onClose} aria-label="추천 닫기">
+        <strong>일정 계획</strong>
+        <button className="icon-btn" onClick={onClose} aria-label="일정 계획 닫기">
           <Icon name="x" />
         </button>
       </div>
-      {!any && <div className="empty small">추천할 작업이 없습니다. 기한이 있는 작업을 만들어 보세요.</div>}
+      {!any && <div className="empty small">제안할 작업이 없습니다. 기한이 있는 작업을 만들어 보세요.</div>}
       {sections.map(([title, items]) =>
         items.length ? (
           <div key={title} className="suggest-sec">
