@@ -82,7 +82,8 @@ kbd { font-family: inherit; font-size: 12px; padding: 2px 6px; border: 1px solid
 .nav-count { font-size: 12px; color: var(--text-2); background: var(--hover); border-radius: 10px; padding: 0 7px; }
 .nav-divider { height: 1px; background: var(--line); margin: 8px 16px; }
 .sidebar-bottom { border-top: 1px solid var(--line); }
-.new-list { display: flex; align-items: center; gap: 6px; padding: 4px 8px; color: var(--blue); }
+.new-list { display: flex; align-items: center; gap: 6px; padding: 2px 8px; color: var(--blue); }
+.new-list input:focus { border-bottom: 1px solid var(--blue); }
 .new-list input { flex: 1; border: none; outline: none; background: none; height: 36px; color: var(--text); }
 .new-list input::placeholder { color: var(--blue); }
 

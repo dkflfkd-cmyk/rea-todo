@@ -182,25 +182,35 @@ export function Sidebar({ view, onSelect, newListRef, collapsed, onToggle, onUns
             )}
           </li>
         ))}
-      </ul>
-      <div className="sidebar-bottom">
+        {/* like the original, "새 목록" sits right under the lists: click it, type a name, press Enter */}
         {!collapsed && (
-          <div className="new-list">
-            <button className="icon-btn" onClick={createList} aria-label="새 목록">
+          <li className="new-list">
+            <button className="icon-btn" onClick={() => newListRef.current?.focus()} aria-label="새 목록 이름 입력">
               <Icon name="plus" />
             </button>
             <input
               ref={newListRef}
               value={newName}
               placeholder="새 목록"
+              aria-label="새 목록"
               onChange={(e) => setNewName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && createList()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  createList();
+                  (e.target as HTMLInputElement).blur();
+                } else if (e.key === 'Escape') {
+                  setNewName('');
+                  (e.target as HTMLInputElement).blur();
+                }
+              }}
             />
             <button className="icon-btn" onClick={createGroup} aria-label="그룹 만들기" title="그룹 만들기">
               <Icon name="groupAdd" />
             </button>
-          </div>
+          </li>
         )}
+      </ul>
+      <div className="sidebar-bottom">
         {!collapsed && (
           <nav className="app-switcher" aria-label="앱 전환">
             {[
