@@ -6,6 +6,7 @@ import { TaskList } from './components/TaskList';
 import { DetailPanel } from './components/DetailPanel';
 import { SettingsView } from './components/SettingsView';
 import { reminderLabel, todayStr } from './date';
+import { Icon } from './icons';
 import './App.css';
 
 type Confirm = { title: string; body: string; action: () => void };
@@ -18,6 +19,7 @@ function Shell() {
   const [collapsed, setCollapsed] = useState(window.innerWidth < 720);
   const [confirm, setConfirm] = useState<Confirm | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [help, setHelp] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const addRef = useRef<HTMLInputElement>(null);
   const newListRef = useRef<HTMLInputElement>(null);
@@ -98,8 +100,7 @@ function Shell() {
         setTimeout(() => newListRef.current?.focus(), 0);
       } else if (e.ctrlKey && k === 'f') {
         e.preventDefault();
-        setCollapsed(false);
-        setTimeout(() => searchRef.current?.focus(), 0);
+        searchRef.current?.focus();
       } else if (e.ctrlKey && k === 'd' && selectedId) {
         e.preventDefault();
         dispatch({ type: 'toggleDone', id: selectedId });
@@ -125,19 +126,52 @@ function Shell() {
 
   return (
     <div className="app">
-      <Sidebar
-        view={view}
-        onSelect={selectView}
-        query={query}
-        onQuery={(q) => {
-          setQuery(q);
-          if (!q && view === 'search') setView('myday');
-        }}
-        searchRef={searchRef}
-        newListRef={newListRef}
-        collapsed={collapsed}
-        onToggle={() => setCollapsed(!collapsed)}
-      />
+      <header className="topbar">
+        <span className="topbar-icon" aria-hidden="true">
+          <Icon name="waffle" />
+        </span>
+        <span className="topbar-title">REA To Do</span>
+        <div className="topbar-search">
+          <Icon name="search" size={16} />
+          <input
+            ref={searchRef}
+            value={query}
+            aria-label="검색"
+            onChange={(e) => {
+              setQuery(e.target.value);
+              if (e.target.value) {
+                setView('search');
+                setSelectedId(null);
+              } else if (view === 'search') setView('myday');
+            }}
+            onFocus={() => query && setView('search')}
+          />
+          {query && (
+            <button
+              className="icon-btn small"
+              onClick={() => {
+                setQuery('');
+                if (view === 'search') setView('myday');
+              }}
+              aria-label="검색 지우기"
+            >
+              <Icon name="x" size={14} />
+            </button>
+          )}
+        </div>
+        <div className="spacer" />
+        <button className="topbar-btn" onClick={() => selectView('settings')} aria-label="설정" title="설정">
+          <Icon name="settings" />
+        </button>
+        <button className="topbar-btn" onClick={() => setHelp(true)} aria-label="도움말" title="도움말">
+          <Icon name="help" />
+        </button>
+        <span className="topbar-avatar" aria-hidden="true">
+          <Icon name="person" />
+        </span>
+      </header>
+      <div className="app-body">
+      <Sidebar view={view} onSelect={selectView} newListRef={newListRef} collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
       {view === 'settings' ? (
         <SettingsView />
       ) : (
@@ -153,6 +187,40 @@ function Shell() {
       )}
       {selected && view !== 'settings' && (
         <DetailPanel key={selected.id} task={selected} onClose={() => setSelectedId(null)} onDelete={() => deleteTask(selected.id)} />
+      )}
+      </div>
+
+      {help && (
+        <div className="overlay" onMouseDown={() => setHelp(false)}>
+          <div className="dialog" role="dialog" aria-modal="true" aria-label="바로 가기 키" onMouseDown={(e) => e.stopPropagation()}>
+            <strong>바로 가기 키</strong>
+            <table className="keys">
+              <tbody>
+                {[
+                  ['Ctrl + N', '작업 추가'],
+                  ['Ctrl + L', '새 목록'],
+                  ['Ctrl + F', '검색'],
+                  ['Ctrl + D', '선택한 작업 완료'],
+                  ['Ctrl + T', '오늘 할 일에 추가/제거'],
+                  ['Delete', '선택한 작업 삭제'],
+                  ['Esc', '세부 정보 닫기'],
+                ].map(([k, v]) => (
+                  <tr key={k}>
+                    <td>
+                      <kbd>{k}</kbd>
+                    </td>
+                    <td>{v}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="dialog-actions">
+              <button className="text-btn outline" onClick={() => setHelp(false)} autoFocus>
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {confirm && (

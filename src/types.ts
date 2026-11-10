@@ -21,11 +21,15 @@ export type Task = {
   completedAt: number | null;
 };
 
-export type TodoList = { id: string; name: string; theme: string };
+export type TodoList = { id: string; name: string; theme: string; groupId?: string | null };
+
+export type ListGroup = { id: string; name: string; collapsed: boolean };
 
 export type SortKey = 'manual' | 'importance' | 'due' | 'title' | 'created';
 
-export type ViewPref = { sort: SortKey; asc: boolean; showCompleted: boolean };
+export type GroupBy = 'none' | 'due' | 'importance' | 'list';
+
+export type ViewPref = { sort: SortKey; asc: boolean; showCompleted: boolean; layout: 'list' | 'grid'; groupBy: GroupBy };
 
 export type SmartListKey = 'important' | 'planned' | 'all' | 'completed';
 
@@ -40,6 +44,7 @@ export type Settings = {
 export type State = {
   tasks: Task[];
   lists: TodoList[];
+  groups: ListGroup[];
   viewPrefs: Record<string, ViewPref>;
   settings: Settings;
 };

@@ -1,4 +1,54 @@
-.app { display: flex; height: 100vh; overflow: hidden; }
+.app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.app-body { flex: 1; min-height: 0; display: flex; position: relative; }
+
+/* top bar */
+.topbar { flex-shrink: 0; height: 48px; display: flex; align-items: center; gap: 12px; padding: 0 12px 0 14px; background: #2564cf; color: #fff; }
+.topbar-icon { display: flex; }
+.topbar-title { font-weight: 600; font-size: 15px; white-space: nowrap; }
+.topbar-search { position: absolute; left: 50%; transform: translateX(-50%); width: min(400px, 40vw); height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: #fff; border-radius: 4px; color: #2564cf; }
+.topbar-search input { flex: 1; min-width: 0; border: none; outline: none; background: none; color: #323130; }
+.topbar-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 4px; color: #fff; }
+.topbar-btn:hover { background: rgba(255, 255, 255, .15); }
+.topbar-avatar { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #fff; }
+
+/* list layout tabs */
+.layout-tabs { display: flex; gap: 4px; margin-left: 16px; color: var(--text); }
+.layout-tabs button { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 13px; border-bottom: 2px solid transparent; }
+.layout-tabs button:hover { background: rgba(0, 0, 0, .04); }
+.layout-tabs button.on { border-bottom-color: var(--accent, var(--blue)); color: var(--accent, var(--blue)); font-weight: 600; }
+.chip-row { display: flex; gap: 16px; flex-wrap: wrap; }
+
+/* add card */
+.add-card { background: var(--card); border-radius: 4px; box-shadow: var(--shadow); margin-bottom: 8px; overflow: hidden; }
+.add-card .add-bar { box-shadow: none; margin: 0; border-radius: 0; }
+.add-circle { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--blue); flex-shrink: 0; }
+.add-tools { display: flex; align-items: center; gap: 2px; padding: 4px 8px; border-top: 1px solid var(--line); background: var(--bg); }
+.add-tools .icon-btn.on { color: var(--blue); background: var(--active); }
+.add-chips { font-size: 12px; color: var(--blue); margin-left: 6px; }
+
+/* grid layout */
+.tasks.grid { background: var(--card); border-radius: 4px; box-shadow: var(--shadow); gap: 0; }
+.grid-head, .task.grid-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) 160px 80px; align-items: center; gap: 12px; }
+.grid-head { padding: 10px 12px 10px 16px; font-size: 12px; color: var(--text-2); border-bottom: 1px solid var(--line); }
+.task.grid-row { min-height: 40px; box-shadow: none; border-radius: 0; border-bottom: 1px solid var(--line); }
+.task.grid-row .star { justify-self: start; }
+.grid-due { font-size: 13px; color: var(--text-2); }
+.tasks.grid .group { margin-top: 0; gap: 0; }
+.tasks.grid .group-head { margin: 6px 8px; }
+
+/* list groups in the sidebar */
+.group-row { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px 0 10px; }
+.group-row:hover { background: var(--hover); }
+.group-row.drop { background: var(--active); outline: 2px dashed var(--blue); outline-offset: -2px; }
+.group-toggle { display: flex; padding: 6px; color: var(--text-2); }
+.group-chevron { display: flex; color: var(--text-2); }
+.group-input { flex: 1; min-width: 0; border: none; border-bottom: 1px solid var(--blue); outline: none; background: none; height: 28px; }
+.nav-item.in-group { padding-left: 36px; }
+.group-empty { padding: 6px 16px 10px 52px; font-size: 12px; color: var(--text-3); }
+.nav-item.active { box-shadow: inset 3px 0 0 var(--blue); }
+.keys { margin: 14px 0 4px; border-collapse: collapse; width: 100%; }
+.keys td { padding: 6px 0; color: var(--text-2); }
+kbd { font-family: inherit; font-size: 12px; padding: 2px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--text); }
 
 /* sidebar */
 .sidebar { width: 290px; flex-shrink: 0; background: var(--bg); display: flex; flex-direction: column; border-right: 1px solid var(--line); transition: width .15s; }

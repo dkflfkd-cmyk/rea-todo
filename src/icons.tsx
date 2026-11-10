@@ -27,7 +27,14 @@ const PATHS: Record<string, string> = {
   palette: 'M12 3a9 9 0 1 0 0 18c1 0 1.5-.7 1.5-1.5 0-1.2-1-1.5-1-2.5s.8-1.5 2-1.5h2A4.5 4.5 0 0 0 21 11c0-4.4-4-8-9-8ZM7.5 12h.01M10 8h.01M15 8h.01',
   edit: 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',
   move: 'M4 12h14m-4-4 4 4-4 4M4 5v14',
-  eye: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Zm10-3a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
+  grid: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+  rows: 'M4 6h16M4 12h10M4 18h13',
+  groupAdd: 'M4 5h6v14H4zM12 5h8v8M17 15v6m-3-3h6',
+  folder: 'M3 6h6l2 2h10v11H3z',
+  waffle: 'M5 5h.01M12 5h.01M19 5h.01M5 12h.01M12 12h.01M19 12h.01M5 19h.01M12 19h.01M19 19h.01',
+  help: 'M9 9a3 3 0 1 1 4.5 2.6c-.9.5-1.5 1.2-1.5 2.4M12 18h.01',
+  person: 'M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM4 21a8 8 0 0 1 16 0',
+  eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Zm10-3a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
 };
 
 export function Icon({ name, size = 18, filled = false }: { name: string; size?: number; filled?: boolean }) {

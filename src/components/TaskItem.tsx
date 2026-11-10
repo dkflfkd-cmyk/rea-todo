@@ -9,6 +9,7 @@ import type { MenuItem } from './Menu';
 type Props = {
   task: Task;
   view: ViewId;
+  layout: 'list' | 'grid';
   selected: boolean;
   onSelect: () => void;
   onDelete: () => void;
@@ -16,7 +17,7 @@ type Props = {
   onDropBefore: (dragId: string) => void;
 };
 
-export function TaskItem({ task, view, selected, onSelect, onDelete, draggable, onDropBefore }: Props) {
+export function TaskItem({ task, view, layout, selected, onSelect, onDelete, draggable, onDropBefore }: Props) {
   const { state, dispatch } = useStore();
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
   const [over, setOver] = useState(false);
@@ -70,7 +71,7 @@ export function TaskItem({ task, view, selected, onSelect, onDelete, draggable, 
   return (
     <>
       <div
-        className={`task${selected ? ' selected' : ''}${task.done ? ' done' : ''}${over ? ' drop-before' : ''}`}
+        className={`task${layout === 'grid' ? ' grid-row' : ''}${selected ? ' selected' : ''}${task.done ? ' done' : ''}${over ? ' drop-before' : ''}`}
         onClick={onSelect}
         onContextMenu={(e) => {
           e.preventDefault();
@@ -106,8 +107,13 @@ export function TaskItem({ task, view, selected, onSelect, onDelete, draggable, 
         </button>
         <div className="task-body">
           <div className="task-title">{task.title}</div>
-          {meta.length > 0 && <div className="task-meta">{meta.map((m, i) => <span key={i} className="meta-part">{m}</span>)}</div>}
+          {layout === 'list' && meta.length > 0 && <div className="task-meta">{meta.map((m, i) => <span key={i} className="meta-part">{m}</span>)}</div>}
         </div>
+        {layout === 'grid' && (
+          <span className={`grid-due${task.due && dueLabel(task.due).overdue && !task.done ? ' overdue' : ''}`}>
+            {task.due ? dueLabel(task.due).text : ''}
+          </span>
+        )}
         <button
           className={`star${task.important ? ' on' : ''}`}
           onClick={(e) => {

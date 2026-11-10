@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useReducer } from 'react';
 import type { Dispatch, ReactNode } from 'react';
-import type { Settings, State, Step, Task, TodoList, ViewId, ViewPref } from './types';
+import type { ListGroup, Settings, State, Step, Task, TodoList, ViewId, ViewPref } from './types';
 import { nextDue, todayStr } from './date';
 
 const KEY = 'rea-todo-state-v1';
@@ -22,6 +22,8 @@ export const defaultPref = (view: string): ViewPref => ({
   sort: 'manual',
   asc: true,
   showCompleted: view !== 'important' && view !== 'planned',
+  layout: 'list',
+  groupBy: 'none',
 });
 
 function initialState(): State {
@@ -29,16 +31,19 @@ function initialState(): State {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const s = JSON.parse(raw) as State;
-      return { ...s, settings: { ...defaultSettings, ...s.settings } };
+      return { ...s, groups: s.groups ?? [], settings: { ...defaultSettings, ...s.settings } };
     }
   } catch {
     // storage blocked or corrupted: start fresh
   }
-  return { tasks: [], lists: [], viewPrefs: {}, settings: defaultSettings };
+  return { tasks: [], lists: [], groups: [], viewPrefs: {}, settings: defaultSettings };
 }
 
+// values picked in the toolbar under "작업 추가" before the task is created
+export type AddExtras = Partial<Pick<Task, 'due' | 'reminder' | 'repeat'>>;
+
 export type Action =
-  | { type: 'addTask'; id: string; title: string; view: ViewId }
+  | { type: 'addTask'; id: string; title: string; view: ViewId; extras?: AddExtras }
   | { type: 'updateTask'; id: string; patch: Partial<Task> }
   | { type: 'toggleDone'; id: string }
   | { type: 'deleteTask'; id: string }
@@ -52,7 +57,10 @@ export type Action =
   | { type: 'deleteList'; id: string }
   | { type: 'setViewPref'; view: string; patch: Partial<ViewPref> }
   | { type: 'setSettings'; patch: Partial<Settings> }
-  | { type: 'replaceData'; tasks: Task[]; lists: TodoList[] };
+  | { type: 'replaceData'; tasks: Task[]; lists: TodoList[] }
+  | { type: 'addGroup'; group: ListGroup }
+  | { type: 'updateGroup'; id: string; patch: Partial<ListGroup> }
+  | { type: 'deleteGroup'; id: string };
 
 function newTask(state: State, id: string, title: string, view: ViewId): Task {
   const orders = state.tasks.map((t) => t.order);
@@ -83,8 +91,11 @@ function mapTask(state: State, id: string, fn: (t: Task) => Task): State {
 
 function reducer(state: State, a: Action): State {
   switch (a.type) {
-    case 'addTask':
-      return { ...state, tasks: [...state.tasks, newTask(state, a.id, a.title, a.view)] };
+    case 'addTask': {
+      const t = { ...newTask(state, a.id, a.title, a.view), ...a.extras };
+      if (t.repeat !== 'none' && !t.due) t.due = todayStr();
+      return { ...state, tasks: [...state.tasks, t] };
+    }
     case 'updateTask':
       return mapTask(state, a.id, (t) => {
         const next = { ...t, ...a.patch };
@@ -159,7 +170,18 @@ function reducer(state: State, a: Action): State {
     case 'setSettings':
       return { ...state, settings: { ...state.settings, ...a.patch } };
     case 'replaceData':
-      return { ...state, tasks: a.tasks, lists: a.lists, viewPrefs: {} };
+      return { ...state, tasks: a.tasks, lists: a.lists, groups: [], viewPrefs: {} };
+    case 'addGroup':
+      return { ...state, groups: [...state.groups, a.group] };
+    case 'updateGroup':
+      return { ...state, groups: state.groups.map((g) => (g.id === a.id ? { ...g, ...a.patch } : g)) };
+    case 'deleteGroup':
+      // ungrouping keeps the lists, like the original
+      return {
+        ...state,
+        groups: state.groups.filter((g) => g.id !== a.id),
+        lists: state.lists.map((l) => (l.groupId === a.id ? { ...l, groupId: null } : l)),
+      };
   }
 }
 
